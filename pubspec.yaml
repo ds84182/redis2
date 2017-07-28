@@ -1,0 +1,14 @@
+name: redis2
+version: 0.0.1
+description: A Redis client for Dart.
+homepage: https://github.com/ds84182/redis2
+author: Dwayne Slater <ds84182@gmail.com>
+
+dependencies:
+  async: ^1.13.0
+  charcode: ^1.1.1
+  crypto: ^2.0.1
+  meta: ^1.0.4
+
+dev_dependencies:
+  test:
