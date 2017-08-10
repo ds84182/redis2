@@ -38,9 +38,32 @@ class RedisClient {
         ..addAll(keys)
         ..addAll(args));
 
-  Future set(String key, String value) => _wrap(['SET', key, value]);
+  static bool _isOk(value) => value == "OK";
+
+  Future<bool> set(String key, String value,
+      {Duration expires, bool ifNotExists: false, bool ifExists: false}) {
+    final cmd = ['SET', key, value];
+
+    if (expires != null) {
+      cmd.add("PX");
+      cmd.add(expires.inMilliseconds.toString());
+    }
+
+    assert(!(ifNotExists && ifExists));
+
+    if (ifNotExists) {
+      cmd.add("NX");
+    } else if (ifExists) {
+      cmd.add("XX");
+    }
+
+    return _wrap(cmd).then(_isOk);
+  }
 
   Future<String> get(String key) => _wrap(['GET', key]);
+
+  Future<String> getSet(String key, String value) =>
+      _wrap(['GETSET', key, value]);
 
   Future hset(String key, String field, String value) =>
       _wrap(['HSET', key, field, value]);
