@@ -80,6 +80,16 @@ class RedisClient {
   Future<int> decrby(String key, int by) =>
       _wrap(['DECRBY', key, by.toString()]);
 
+  Future<int> hincr(String key, String field) => _wrap(['HINCR', key, field]);
+
+  Future<int> hincrby(String key, String field, int by) =>
+      _wrap(['HINCRBY', key, field, by.toString()]);
+
+  Future<int> hdecr(String key, String field) => _wrap(['HDECR', key, field]);
+
+  Future<int> hdecrby(String key, String field, int by) =>
+      _wrap(['HDECRBY', key, field, by.toString()]);
+
   Future<List<String>> lrange(String key, int i, int j) =>
       _wrap(['LRANGE', key, i.toString(), j.toString()]);
 
