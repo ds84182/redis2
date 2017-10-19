@@ -90,6 +90,51 @@ class RedisClient {
   Future<int> hdecrby(String key, String field, int by) =>
       _wrap(['HDECRBY', key, field, by.toString()]);
 
+  Future<String> lpop(String key) => _wrap(['LPOP', key]);
+
+  Future<String> blpop(String key, {int timeout}) =>
+      _wrap(['BLPOP', key, timeout == null ? "0" : timeout.toString()])
+          .then((List<String> reply) => reply?.last);
+
+  Future<List<String>> blpopMultiple(Iterable<String> keys, {int timeout}) =>
+      _wrap(['BLPOP']
+        ..addAll(keys)
+        ..add(timeout == null ? "0" : timeout.toString()));
+
+  Future<int> lpush(String key, String value, {bool ifExists: false}) =>
+      _wrap([ifExists ? 'LPUSHX' : 'LPUSH', key, value]);
+
+  Future<int> lpushMultiple(String key, Iterable<String> values) =>
+      _wrap(['LPUSH', key]..addAll(values));
+
+  Future<String> rpop(String key) => _wrap(['RPOP', key]);
+
+  Future<String> brpop(String key, {int timeout}) =>
+      _wrap(['BRPOP', key, timeout == null ? "0" : timeout.toString()])
+          .then((List<String> reply) => reply?.last);
+
+  Future<List<String>> brpopMultiple(Iterable<String> keys, {int timeout}) =>
+      _wrap(['BRPOP']
+        ..addAll(keys)
+        ..add(timeout == null ? "0" : timeout.toString()));
+
+  Future<int> rpush(String key, String value, {bool ifExists: false}) =>
+      _wrap([ifExists ? 'RPUSHX' : 'RPUSH', key, value]);
+
+  Future<int> rpushMultiple(String key, Iterable<String> values) =>
+      _wrap(['RPUSH', key]..addAll(values));
+
+  Future<String> rpoplpush(String source, String destination) =>
+      _wrap(['RPOPLPUSH', source, destination]);
+
+  Future<String> brpoplpush(String source, String destination, {int timeout}) =>
+      _wrap([
+        'BRPOPLPUSH',
+        source,
+        destination,
+        timeout == null ? "0" : timeout.toString()
+      ]);
+
   Future<List<String>> lrange(String key, int i, int j) =>
       _wrap(['LRANGE', key, i.toString(), j.toString()]);
 
