@@ -63,6 +63,8 @@ class _StreamBuffer<T> {
 
     do {
       // print("bufferiter ${out.length} $count");
+      if (_buffers.isEmpty) await _notification.wait;
+
       var oldlen = out.length;
       out.addAll(_buffers.first.skip(_index).take(count - out.length));
       _index += out.length - oldlen;
@@ -70,7 +72,6 @@ class _StreamBuffer<T> {
       if (_index >= _buffers.first.length) {
         _buffers.removeFirst();
         _index = 0;
-        if (_buffers.isEmpty) await _notification.wait;
       }
     } while (out.length < count);
 
