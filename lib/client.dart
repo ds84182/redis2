@@ -22,7 +22,26 @@ class RedisClient {
     return result;
   }
 
+  static bool _countToBool(int count) => count != 0;
+
+  // Connection
+
+  Future quit() => _wrap(const ['QUIT']);
+
   Future select(int db) => _wrap(['SELECT', db.toString()]);
+
+  // General key utilities
+
+  Future<bool> exists(String key) => _wrap(['EXISTS', key]).then(_countToBool);
+
+  Future<bool> del(String key) => _wrap(['DEL', key]).then(_countToBool);
+
+  Future<int> delMultiple(Iterable<String> keys) =>
+      _wrap(['DEL']..addAll(keys));
+
+  Future<String> type(String key) => _wrap(['TYPE', key]);
+
+  // Script utilities
 
   Future<String> scriptLoad(String script) => _wrap(['SCRIPT', 'LOAD', script]);
 
@@ -39,6 +58,8 @@ class RedisClient {
         ..addAll(args));
 
   static bool _isOk(value) => value == "OK";
+
+  // String based keys
 
   Future<bool> set(String key, String value,
       {Duration expires, bool ifNotExists: false, bool ifExists: false}) {
@@ -65,10 +86,14 @@ class RedisClient {
   Future<String> getSet(String key, String value) =>
       _wrap(['GETSET', key, value]);
 
+  // Hash tables
+
   Future hset(String key, String field, String value) =>
       _wrap(['HSET', key, field, value]);
 
   Future<String> hget(String key, String field) => _wrap(['HGET', key, field]);
+
+  // Integer-like string keys
 
   Future<int> incr(String key) => _wrap(['INCR', key]);
 
@@ -80,6 +105,8 @@ class RedisClient {
   Future<int> decrby(String key, int by) =>
       _wrap(['DECRBY', key, by.toString()]);
 
+  // Integer-like hash table values
+
   Future<int> hincr(String key, String field) => _wrap(['HINCR', key, field]);
 
   Future<int> hincrby(String key, String field, int by) =>
@@ -89,6 +116,8 @@ class RedisClient {
 
   Future<int> hdecrby(String key, String field, int by) =>
       _wrap(['HDECRBY', key, field, by.toString()]);
+
+  // Lists
 
   Future<String> lpop(String key) => _wrap(['LPOP', key]);
 
@@ -138,11 +167,25 @@ class RedisClient {
   Future<List<String>> lrange(String key, int i, int j) =>
       _wrap(['LRANGE', key, i.toString(), j.toString()]);
 
+  // PubSub
+
   Future<int> publish(String channel, String message) =>
       _wrap(['PUBLISH', channel, message]);
 
-  Future<bool> exists(String key) =>
-      _wrap(['EXISTS', key]).then((int value) => value == 1);
+  // Sets
 
-  Future quit() => _wrap(const ['QUIT']);
+  Future<bool> sadd(String key, String member) =>
+      _wrap(['SADD', key, member]).then(_countToBool);
+
+  Future<int> saddMultiple(String key, Iterable<String> members) =>
+      _wrap(['SADD', key]..addAll(members));
+
+  Future<bool> sismember(String key, String member) =>
+      _wrap(['SISMEMBER', key, member]);
+
+  Future<bool> srem(String key, String member) =>
+      _wrap(['SREM', key, member]).then(_countToBool);
+
+  Future<int> sremMultiple(String key, Iterable<String> members) =>
+      _wrap(['SREM', key]..addAll(members));
 }
