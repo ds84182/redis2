@@ -9,7 +9,7 @@ class RESPEncoder {
     List<int> output = [];
 
     output.add($asterisk);
-    output.addAll(ASCII.encode(value.length.toString()));
+    output.addAll(ascii.encode(value.length.toString()));
     output.addAll(const [$cr, $lf]);
 
     value.forEach((str) {
@@ -18,7 +18,7 @@ class RESPEncoder {
       } else {
         var encoded = str.codeUnits;
         output.add($dollar);
-        output.addAll(ASCII.encode(encoded.length.toString()));
+        output.addAll(ascii.encode(encoded.length.toString()));
         output.addAll(const [$cr, $lf]);
         output.addAll(encoded);
         output.addAll(const [$cr, $lf]);

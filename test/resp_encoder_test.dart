@@ -22,6 +22,6 @@ const outputRESP =
 
 Future main() async {
   test("encodes properly", () {
-    expect(RESPEncoder.encode(input), UTF8.encode(outputRESP));
+    expect(RESPEncoder.encode(input), utf8.encode(outputRESP));
   });
 }

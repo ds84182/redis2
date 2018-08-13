@@ -13,28 +13,28 @@ class RedisClient {
   RedisClient(this.connection);
 
   Future<T> _wrap<T>(List<String> command) async {
-    var result = await connection.send(command);
+    final result = await connection.send(command);
 
     if (result is RedisError) {
       throw result;
     }
 
-    return result;
+    return result as T;
   }
 
   static bool _countToBool(int count) => count != 0;
 
   // Connection
 
-  Future quit() => _wrap(const ['QUIT']);
+  Future<void> quit() => _wrap(const ['QUIT']);
 
-  Future select(int db) => _wrap(['SELECT', db.toString()]);
+  Future<void> select(int db) => _wrap(['SELECT', db.toString()]);
 
   // General key utilities
 
-  Future<bool> exists(String key) => _wrap(['EXISTS', key]).then(_countToBool);
+  Future<bool> exists(String key) => _wrap<int>(['EXISTS', key]).then(_countToBool);
 
-  Future<bool> del(String key) => _wrap(['DEL', key]).then(_countToBool);
+  Future<bool> del(String key) => _wrap<int>(['DEL', key]).then(_countToBool);
 
   Future<int> delMultiple(Iterable<String> keys) =>
       _wrap(['DEL']..addAll(keys));
@@ -88,7 +88,7 @@ class RedisClient {
 
   // Hash tables
 
-  Future hset(String key, String field, String value) =>
+  Future<void> hset(String key, String field, String value) =>
       _wrap(['HSET', key, field, value]);
 
   Future<String> hget(String key, String field) => _wrap(['HGET', key, field]);
@@ -122,7 +122,7 @@ class RedisClient {
   Future<String> lpop(String key) => _wrap(['LPOP', key]);
 
   Future<String> blpop(String key, {int timeout}) =>
-      _wrap(['BLPOP', key, timeout == null ? "0" : timeout.toString()])
+      _wrap<List<String>>(['BLPOP', key, timeout == null ? "0" : timeout.toString()])
           .then((List<String> reply) => reply?.last);
 
   Future<List<String>> blpopMultiple(Iterable<String> keys, {int timeout}) =>
@@ -139,7 +139,7 @@ class RedisClient {
   Future<String> rpop(String key) => _wrap(['RPOP', key]);
 
   Future<String> brpop(String key, {int timeout}) =>
-      _wrap(['BRPOP', key, timeout == null ? "0" : timeout.toString()])
+      _wrap<List<String>>(['BRPOP', key, timeout == null ? "0" : timeout.toString()])
           .then((List<String> reply) => reply?.last);
 
   Future<List<String>> brpopMultiple(Iterable<String> keys, {int timeout}) =>
@@ -175,16 +175,16 @@ class RedisClient {
   // Sets
 
   Future<bool> sadd(String key, String member) =>
-      _wrap(['SADD', key, member]).then(_countToBool);
+      _wrap<int>(['SADD', key, member]).then(_countToBool);
 
   Future<int> saddMultiple(String key, Iterable<String> members) =>
       _wrap(['SADD', key]..addAll(members));
 
   Future<bool> sismember(String key, String member) =>
-      _wrap(['SISMEMBER', key, member]);
+      _wrap<int>(['SISMEMBER', key, member]).then(_countToBool);
 
   Future<bool> srem(String key, String member) =>
-      _wrap(['SREM', key, member]).then(_countToBool);
+      _wrap<int>(['SREM', key, member]).then(_countToBool);
 
   Future<int> sremMultiple(String key, Iterable<String> members) =>
       _wrap(['SREM', key]..addAll(members));

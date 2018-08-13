@@ -1,7 +1,7 @@
 library redis2.src.script;
 
 import 'dart:async';
-import 'dart:convert' show UTF8;
+import 'dart:convert' show utf8;
 
 import 'package:crypto/crypto.dart' show sha1;
 import 'package:meta/meta.dart';
@@ -15,7 +15,7 @@ class RedisScript {
   RedisScript(this.identifier, this.script);
 
   String get hash =>
-      _calculatedHash ??= sha1.convert(UTF8.encode(script)).toString();
+      _calculatedHash ??= sha1.convert(utf8.encode(script)).toString();
 
   Future load(RedisClient client) => client.scriptLoad(script);
 
@@ -38,8 +38,8 @@ class RedisScriptSet {
       : _scripts = new List<RedisScript>(1)..[0] = script;
 
   Map<String, RedisScript> get _identifierMap =>
-      _identifierMapCache ??= new Map<String, RedisScript>.fromIterable(_scripts,
-          key: (RedisScript script) => script.identifier);
+      _identifierMapCache ??= new Map<String, RedisScript>.fromEntries(_scripts
+          .map((RedisScript script) => MapEntry(script.identifier, script)));
 
   Iterable<RedisScript> _filterScriptsByExistence(List<bool> existence,
       {@required bool exists}) sync* {
@@ -55,8 +55,7 @@ class RedisScriptSet {
         await client.scriptExists(_scripts.map((script) => script.hash));
 
     // Bail early if everything exists already
-    if (existence.every((exists) => exists))
-      return 0;
+    if (existence.every((exists) => exists)) return 0;
 
     final results = await Future.wait(
       _filterScriptsByExistence(existence, exists: false)

@@ -82,7 +82,7 @@ class _StreamBuffer<T> {
   }
 }
 
-class RESPDecoder implements StreamTransformer<List<int>, dynamic> {
+class RESPDecoder extends StreamTransformerBase<List<int>, dynamic> {
   const RESPDecoder();
 
   @override
