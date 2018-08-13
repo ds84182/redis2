@@ -7,8 +7,6 @@ import 'package:charcode/ascii.dart';
 
 import 'package:redis2/error.dart';
 
-const _kTerminator = '\r\n';
-
 class _AsyncNotification {
   Completer _completer;
 

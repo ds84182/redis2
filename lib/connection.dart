@@ -37,7 +37,7 @@ class RedisConnection {
 
   static Future<RedisConnection> connect(host, [int port = 6379]) async {
     var sock = await Socket.connect(host, port);
-    sock.setOption(SocketOption.TCP_NODELAY, true);
+    sock.setOption(SocketOption.tcpNoDelay, true);
     return new RedisConnection._(sock);
   }
 
