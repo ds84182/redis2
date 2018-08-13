@@ -32,7 +32,8 @@ class RedisClient {
 
   // General key utilities
 
-  Future<bool> exists(String key) => _wrap<int>(['EXISTS', key]).then(_countToBool);
+  Future<bool> exists(String key) =>
+      _wrap<int>(['EXISTS', key]).then(_countToBool);
 
   Future<bool> del(String key) => _wrap<int>(['DEL', key]).then(_countToBool);
 
@@ -40,6 +41,17 @@ class RedisClient {
       _wrap(['DEL']..addAll(keys));
 
   Future<String> type(String key) => _wrap(['TYPE', key]);
+
+  Future<bool> expire(String key, Duration duration) =>
+      _wrap<int>(['EXPIRE', key, duration.inSeconds.toString()])
+          .then(_countToBool);
+
+  Future<bool> expireAt(String key, DateTime timestamp) => _wrap<int>([
+        'EXPIREAT',
+        key,
+        (timestamp.millisecondsSinceEpoch ~/ Duration.millisecondsPerSecond)
+            .toString()
+      ]).then(_countToBool);
 
   // Script utilities
 
@@ -121,9 +133,9 @@ class RedisClient {
 
   Future<String> lpop(String key) => _wrap(['LPOP', key]);
 
-  Future<String> blpop(String key, {int timeout}) =>
-      _wrap<List<String>>(['BLPOP', key, timeout == null ? "0" : timeout.toString()])
-          .then((List<String> reply) => reply?.last);
+  Future<String> blpop(String key, {int timeout}) => _wrap<List<String>>(
+          ['BLPOP', key, timeout == null ? "0" : timeout.toString()])
+      .then((List<String> reply) => reply?.last);
 
   Future<List<String>> blpopMultiple(Iterable<String> keys, {int timeout}) =>
       _wrap(['BLPOP']
@@ -138,9 +150,9 @@ class RedisClient {
 
   Future<String> rpop(String key) => _wrap(['RPOP', key]);
 
-  Future<String> brpop(String key, {int timeout}) =>
-      _wrap<List<String>>(['BRPOP', key, timeout == null ? "0" : timeout.toString()])
-          .then((List<String> reply) => reply?.last);
+  Future<String> brpop(String key, {int timeout}) => _wrap<List<String>>(
+          ['BRPOP', key, timeout == null ? "0" : timeout.toString()])
+      .then((List<String> reply) => reply?.last);
 
   Future<List<String>> brpopMultiple(Iterable<String> keys, {int timeout}) =>
       _wrap(['BRPOP']
